@@ -22,7 +22,7 @@ function Projects() {
 
       const response = await axios.get(
 
-        "http://localhost:5000/api/projects",
+        "https://project-management-backend-yhy6.onrender.com/api/projects",
 
         {
           headers: {

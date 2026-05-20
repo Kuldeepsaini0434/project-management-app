@@ -24,7 +24,7 @@ function Signup(){
 
          await axios.post(
 
-            "http://localhost:5000/api/auth/signup",
+            "https://project-management-backend-yhy6.onrender.com/api/auth/signup",
 
             {
                name,

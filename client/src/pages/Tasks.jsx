@@ -26,7 +26,7 @@ function Tasks() {
 
       const response = await axios.get(
 
-        "http://localhost:5000/api/tasks",
+        "https://project-management-backend-yhy6.onrender.com/api/tasks",
 
         {
           headers: {
@@ -54,7 +54,7 @@ function Tasks() {
 
       await axios.put(
 
-        `http://localhost:5000/api/tasks/${id}`,
+        `https://project-management-backend-yhy6.onrender.com/api/tasks/${id}`,
 
         {
           status,

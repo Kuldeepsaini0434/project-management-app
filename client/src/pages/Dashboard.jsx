@@ -31,7 +31,7 @@ function Dashboard() {
 
       const response = await axios.get(
 
-        "http://localhost:5000/api/tasks/dashboard/stats",
+        "https://project-management-backend-yhy6.onrender.com/api/tasks/dashboard/stats",
 
         {
           headers: {

@@ -32,7 +32,7 @@ function CreateTask() {
       const token = localStorage.getItem("token");
 
       const response = await axios.get(
-        "http://localhost:5000/api/projects",
+        "https://project-management-backend-yhy6.onrender.com/api/projects",
 
         {
           headers: {
@@ -52,7 +52,7 @@ function CreateTask() {
       const token = localStorage.getItem("token");
 
       const response = await axios.get(
-        "http://localhost:5000/api/auth/users",
+        "https://project-management-backend-yhy6.onrender.com/api/auth/users",
 
         {
           headers: {
@@ -74,7 +74,7 @@ function CreateTask() {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        "http://localhost:5000/api/tasks",
+        "https://project-management-backend-yhy6.onrender.com/api/tasks",
 
         {
           title,
