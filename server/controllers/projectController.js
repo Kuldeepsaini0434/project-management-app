@@ -1,52 +1,52 @@
 const Project = require("../models/Project");
 
-exports.createProject = async (req,res)=>{
+exports.createProject = async (req, res) => {
+  try {
+    const { title, description, teamMembers } = req.body;
 
-   try{
+    const project = await Project.create({
+      title,
+      description,
+      teamMembers,
 
-      const {title,description,teamMembers} = req.body;
+      createdBy: req.user.id,
+    });
 
-      const project = await Project.create({
-
-         title,
-         description,
-         teamMembers,
-
-         createdBy:req.user.id
-
-      });
-
-      res.status(201).json({
-         message:"Project created successfully",
-         project
-      });
-
-   }catch(error){
-
-      res.status(500).json({
-         error:error.message
-      });
-
-   }
-
+    res.status(201).json({
+      message: "Project created successfully",
+      project,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
 };
 
-exports.getProjects = async (req,res)=>{
+exports.getProjects = async (req, res) => {
+  try {
+    let projects;
 
-   try{
-
-      const projects = await Project.find()
-      .populate("createdBy","name email")
-      .populate("teamMembers","name email");
-
-      res.status(200).json(projects);
-
-   }catch(error){
-
-      res.status(500).json({
-         error:error.message
+    if (req.user.role === "Admin") {
+      projects = await Project.find().populate("createdBy", "name");
+    } else {
+      const tasks = await Task.find({
+        assignedTo: req.user.id,
       });
 
-   }
+      const projectIds = tasks.map((task) => task.project);
 
+      projects = await Project.find({
+        _id: { $in: projectIds },
+      }).populate("createdBy", "name");
+    }
+
+    res.json(projects);
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
 };

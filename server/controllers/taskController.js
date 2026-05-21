@@ -1,139 +1,113 @@
 const Task = require("../models/Task");
 
-exports.createTask = async (req,res)=>{
+exports.createTask = async (req, res) => {
+  try {
+    const { title, description, project, assignedTo, dueDate } = req.body;
 
-   try{
+    const task = await Task.create({
+      title,
+      description,
+      project,
+      assignedTo,
+      dueDate,
+    });
 
-      const {
-         title,
-         description,
-         project,
-         assignedTo,
-         dueDate
-      } = req.body;
-
-      const task = await Task.create({
-
-         title,
-         description,
-         project,
-         assignedTo,
-         dueDate
-
-      });
-
-      res.status(201).json({
-         message:"Task created successfully",
-         task
-      });
-
-   }catch(error){
-
-      res.status(500).json({
-         error:error.message
-      });
-
-   }
-
+    res.status(201).json({
+      message: "Task created successfully",
+      task,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
 };
 
-exports.getTasks = async (req,res)=>{
+exports.getTasks = async (req, res) => {
+  try {
+    let tasks;
 
-   try{
+    if (req.user.role === "Admin") {
+      tasks = await Task.find()
+        .populate("project")
+        .populate("assignedTo", "name email");
+    } else {
+      tasks = await Task.find({
+        assignedTo: req.user.id,
+      })
+        .populate("project")
+        .populate("assignedTo", "name email");
+    }
 
-      const tasks = await Task.find()
-      .populate("project","title")
-      .populate("assignedTo","name email");
+    res.json(tasks);
+  } catch (error) {
+    console.log(error);
 
-      res.status(200).json(tasks);
-
-   }catch(error){
-
-      res.status(500).json({
-         error:error.message
-      });
-
-   }
-
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
 };
 
-exports.updateTaskStatus = async (req,res)=>{
+exports.updateTaskStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
 
-   try{
+    const task = await Task.findByIdAndUpdate(
+      req.params.id,
 
-      const {status} = req.body;
+      { status },
 
-      const task = await Task.findByIdAndUpdate(
+      { new: true },
+    );
 
-         req.params.id,
+    res.status(200).json({
+      message: "Task updated successfully",
+      task,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+};
 
-         {status},
+exports.getDashboard = async (req, res) => {
+  try {
+    const totalTasks = await Task.countDocuments();
 
-         {new:true}
+    const pendingTasks = await Task.countDocuments({
+      status: "Pending",
+    });
 
-      );
+    const completedTasks = await Task.countDocuments({
+      status: "Completed",
+    });
 
-      res.status(200).json({
-         message:"Task updated successfully",
-         task
-      });
+    const inProgressTasks = await Task.countDocuments({
+      status: "In Progress",
+    });
 
-   }catch(error){
+    const overdueTasks = await Task.countDocuments({
+      dueDate: {
+        $lt: new Date(),
+      },
 
-      res.status(500).json({
-         error:error.message
-      });
+      status: {
+        $ne: "Completed",
+      },
+    });
 
-   }
-
-}
-
-exports.getDashboard = async (req,res)=>{
-
-   try{
-
-      const totalTasks = await Task.countDocuments();
-
-      const pendingTasks = await Task.countDocuments({
-         status:"Pending"
-      });
-
-      const completedTasks = await Task.countDocuments({
-         status:"Completed"
-      });
-
-      const inProgressTasks = await Task.countDocuments({
-         status:"In Progress"
-      });
-
-      const overdueTasks = await Task.countDocuments({
-
-         dueDate:{
-            $lt:new Date()
-         },
-
-         status:{
-            $ne:"Completed"
-         }
-
-      });
-
-      res.status(200).json({
-
-         totalTasks,
-         pendingTasks,
-         completedTasks,
-         inProgressTasks,
-         overdueTasks
-
-      });
-
-   }catch(error){
-
-      res.status(500).json({
-         error:error.message
-      });
-
-   }
-
-}
+    res.status(200).json({
+      totalTasks,
+      pendingTasks,
+      completedTasks,
+      inProgressTasks,
+      overdueTasks,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+};
