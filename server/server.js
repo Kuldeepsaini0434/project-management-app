@@ -12,8 +12,10 @@ const app = express();
 
 app.use(
   cors({
-    origin:
+    origin: [
+      "http://localhost:5173",
       "https://project-management-frontend-lrrnrvp45-kuldeep-saini-s-projects1.vercel.app",
+    ],
 
     methods: ["GET", "POST", "PUT", "DELETE"],
 
