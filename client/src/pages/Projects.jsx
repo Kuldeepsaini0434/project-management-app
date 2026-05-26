@@ -8,6 +8,8 @@ function Projects() {
 
   const [projects, setProjects] = useState([]);
 
+  const role = localStorage.getItem("role");
+
   useEffect(() => {
 
     fetchProjects();
@@ -37,6 +39,36 @@ function Projects() {
     } catch (error) {
 
       console.log(error);
+
+    }
+
+  };
+
+  const deleteProject = async (id) => {
+
+    try {
+
+      const token = localStorage.getItem("token");
+
+      const response = await axios.delete(
+
+        `https://project-management-backend-yhy6.onrender.com/api/projects/${id}`,
+
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+
+      );
+
+      alert(response.data.message);
+
+      fetchProjects();
+
+    } catch (error) {
+
+      alert(error.response.data.message);
 
     }
 
@@ -109,6 +141,38 @@ function Projects() {
                   </p>
 
                 </div>
+
+                {
+                  role === "Admin" && (
+
+                    <button
+
+                      onClick={() => {
+
+                        const confirmDelete = window.confirm(
+
+                          "Delete this project?\n\nAll tasks must be completed first."
+
+                        );
+
+                        if (confirmDelete) {
+
+                          deleteProject(project._id);
+
+                        }
+
+                      }}
+
+                      className="mt-6 w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-2xl font-semibold transition-all duration-300"
+
+                    >
+
+                      Delete Project
+
+                    </button>
+
+                  )
+                }
 
               </div>
 

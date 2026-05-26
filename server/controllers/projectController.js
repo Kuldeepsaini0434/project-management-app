@@ -50,3 +50,50 @@ exports.getProjects = async (req, res) => {
     });
   }
 };
+
+exports.deleteProject = async (req, res) => {
+
+   try {
+
+      const projectId = req.params.id;
+
+      const incompleteTasks = await Task.find({
+
+         project: projectId,
+
+         status: { $ne: "Completed" }
+
+      });
+
+      if(incompleteTasks.length > 0){
+
+         return res.status(400).json({
+
+            message:
+            "Complete all tasks before deleting project"
+
+         });
+
+      }
+
+      await Project.findByIdAndDelete(projectId);
+
+      res.status(200).json({
+
+         message:"Project deleted successfully"
+
+      });
+
+   } catch (error) {
+
+      console.log(error);
+
+      res.status(500).json({
+
+         message:"Server Error"
+
+      });
+
+   }
+
+};

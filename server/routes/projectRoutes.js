@@ -7,11 +7,14 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const {
    createProject,
-   getProjects
+   getProjects,
+   deleteProject
 } = require("../controllers/projectController");
 
 router.post("/", authMiddleware, roleMiddleware("Admin"),createProject);
 
 router.get("/", authMiddleware, getProjects);
+
+router.delete("/:id", authMiddleware, deleteProject);
 
 module.exports = router;
