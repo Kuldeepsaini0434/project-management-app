@@ -78,6 +78,36 @@ function Tasks() {
 
   };
 
+  const deleteTask = async(id)=>{
+
+    try{
+
+      const token = localStorage.getItem("token");
+
+      const response = await axios.delete(
+
+        `https://project-management-backend-yhy6.onrender.com/api/tasks/${id}`,
+
+        {
+          headers:{
+            Authorization:token
+          }
+        }
+
+      );
+
+      alert(response.data.message);
+
+      fetchTasks();
+
+    }catch(error){
+
+      console.log(error);
+
+    }
+
+  };
+
   const filteredTasks = tasks.filter((task) => {
 
     const matchesSearch = task.title
@@ -243,6 +273,39 @@ function Tasks() {
                     </option>
 
                   </select>
+
+                  {
+                    localStorage.getItem("role")
+                    ?.toLowerCase() === "admin" && (
+
+                      <button
+
+                        onClick={() => {
+
+                          const confirmDelete = window.confirm(
+
+                            "Delete this task?"
+
+                          );
+
+                          if(confirmDelete){
+
+                            deleteTask(task._id);
+
+                          }
+
+                        }}
+
+                        className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-2xl font-semibold transition-all duration-300"
+
+                      >
+
+                        Delete Task
+
+                      </button>
+
+                    )
+                  }
 
                 </div>
 
